@@ -24,6 +24,8 @@ extern "C"
 	int quickPartition(int A[], int len);
 	void quickSort(int A[], int len);
 	void mergeSort(int array[], int len);
+	int selectionKthR(int A[], int len, int K);
+	int quickSelectKth(int A[], int len, int k);
 
 #ifdef __cplusplus
 }
