@@ -1,3 +1,21 @@
+/*
+ *sort.c
+ *
+ *implement several typical sort algorithm and selection algorithm introduced by:
+ *
+ * <INTRODUCTION TO ALGORITHM>
+ * <DATA STRUCTURE AND ALGORITHM ANALYSIS>
+ *
+ *BUBBLE SORT
+ *SELECTION SORT
+ *INSERTION SORT
+ *MERGE SORT
+ *QUICK SORT
+ *BIBARY_SEARCH
+ *QUICK_SELECTION
+ *
+ */
+
 #include "sort.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +35,7 @@ void swap(int* x, int* y) {
 /*
  *Bubble-sort:
  *    like the bubble in water, the heavier bubble will sink, the lighter bubble will come-up
- *    swap the two neighbour, the heavier up, the lighter down 
+ *    swap the two neighbor array, the heavier up, the lighter down 
  *
  */
 void bubbleSort(int array[], int len) {

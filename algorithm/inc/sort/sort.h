@@ -26,6 +26,7 @@ extern "C"
 	void mergeSort(int array[], int len);
 	int selectionKthR(int A[], int len, int K);
 	int quickSelectKth(int A[], int len, int k);
+	int binarySearch(int A[], int len, int key);
 
 #ifdef __cplusplus
 }
