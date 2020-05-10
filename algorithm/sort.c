@@ -101,6 +101,35 @@ void insertionSort(int array[], int len) {
 }
 
 
+int ShellOptIncrement(int pShellIncTable[], int tableLen, int limit)
+{
+	int i = 0, j = 0, k = 0;
+	int increment = 0;
+	int tableB[32] = {0};
+	int tableS[32] = {0};
+
+	i = 0;
+	while (increment <= limit && i < min(tableLen,16))
+	{
+		tableB[i] = increment = (9 * ((((1 << i) - 1)) << i)) + 1;
+		i++;
+	}
+	
+
+	j = 2;
+	increment = 0;
+	while (increment <= limit && j < min(tableLen, 16))
+	{
+		tableS[j-2] = increment = (((1 << j) - 3) << j) + 1;
+		j++;
+	}
+	
+	j -= 2;
+	merge(tableB, i, tableS, j, pShellIncTable);
+
+	return i + j;
+}
+
 /*
  *shell sort(diminishing increment sort):
  *
@@ -114,9 +143,14 @@ void shellsort(int array[], int len, shellSortIncType incType)
 	int i, j ,k;
 	int temp;
 
-	int incTable[] = { 5, 3, 1};
+	int incTable[SHELL_INC_TABLE_SIZE] = {1, 5, 0};
 
-	for (k = 0, increment = incTable[k]; k < (sizeof(incTable)/sizeof(incTable[0])) && (increment = incTable[k]); k++){
+	int index = 0;
+
+	index = ShellOptIncrement(incTable, SHELL_INC_TABLE_SIZE, len >> 1);
+
+	for (k = 0; k < index; k++){
+		increment = incTable[index - k - 1];
 		for (i = increment; i < len; i++){
 			temp = array[i];
 			for (j = i - increment; j >= 0; j -= increment) {
@@ -129,7 +163,6 @@ void shellsort(int array[], int len, shellSortIncType incType)
 			array[j + increment] = temp;
 		}
 	}
-	return;
 }
 
 

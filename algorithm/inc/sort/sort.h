@@ -15,6 +15,7 @@ extern "C"
 		INC_HIBBARD,
 		INC_BEST
 	}shellSortIncType;
+	#define SHELL_INC_TABLE_SIZE 64
 
 	void shellsort(int array[], int len, shellSortIncType incType);
 	void bubbleSort(int array[], int len);
@@ -27,6 +28,8 @@ extern "C"
 	int selectionKthR(int A[], int len, int K);
 	int quickSelectKth(int A[], int len, int k);
 	int binarySearch(int A[], int len, int key);
+	void swap(int* x, int* y);
+	void merge(int sortedA[], int lenA, int sortedB[], int lenB, int sortedC[]);
 
 #ifdef __cplusplus
 }

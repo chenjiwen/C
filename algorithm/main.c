@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include "sort.h"
 
+extern void dsa_chap2_test();
+extern void math_test();
+extern void sort_algo_perf_analysis();
+
 int main()
 {
 	int array[] = {1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15, 8, 16};
@@ -16,5 +20,8 @@ int main()
 	insertionSort(array, sizeof(array) / sizeof(array[0]));
 	shellsort(array, sizeof(array)/sizeof(array[0]), INC_SHELL);
 	countingSort(countarray, dstarray, 8, 5);
+	dsa_chap2_test();
+	math_test();
+	sort_algo_perf_analysis();
 	return 0;
 }
