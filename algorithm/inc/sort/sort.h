@@ -17,6 +17,17 @@ extern "C"
 	}shellSortIncType;
 	#define SHELL_INC_TABLE_SIZE 64
 
+	typedef enum {
+		SORT_DEFAULT,
+		SORT_SHELL = SORT_DEFAULT,
+		SORT_MERGE,
+		SORT_QUICKSORT,
+		SORT_INSERTION,
+		SORT_BUBBLE,
+		SORT_SELECTION,
+		SORT_SELECTION_ALL
+	}sortAlgT;
+
 	void shellsort(int array[], int len, shellSortIncType incType);
 	void bubbleSort(int array[], int len);
 	void selectionSort(int array[], int len);

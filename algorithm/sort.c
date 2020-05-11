@@ -100,7 +100,15 @@ void insertionSort(int array[], int len) {
 	}
 }
 
-
+/*
+ *int ShellOptIncrement(int pShellIncTable[], int tableLen, int limit):
+ *     pShellIncTable[]: table to store the optimized shell increment
+ *     tableLen:         table size of the shall table
+ *     limit:            max limit of the shell increment
+ *
+ *    9*4^i - 9*2^i + 1
+ *    4^i - 3*2^i + 1
+ */
 int ShellOptIncrement(int pShellIncTable[], int tableLen, int limit)
 {
 	int i = 0, j = 0, k = 0;
