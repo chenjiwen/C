@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
-
+#include <math.h>
 /*
  *swap the two value x, y
  */
@@ -174,6 +174,154 @@ void shellsort(int array[], int len, shellSortIncType incType)
 }
 
 
+void shellSortByIncrement(int array[], int len, int increment)
+{
+	int i =0, j = 0;
+	int temp;
+
+	for (i = increment; i < len; i++) {
+		temp = array[i];
+		for (j = i - increment; j >= 0; j -= increment) {
+			if (array[j] > temp) 
+				array[j + increment] = array[j];
+			else 
+				break;
+		}
+		array[j + increment] = temp;
+	}
+	
+}
+
+/*
+ *    9*4^i - 9*2^i + 1
+ *    4^i - 3*2^i + 1
+ */
+void shellSortWithSedgwickIncrement(int array[], int len)
+{
+	int i = 0, j= 0, increment = 0;
+	int inc1, inc2;
+
+	while (increment < len)
+	{
+		increment = (9 * ((((1 << i) - 1)) << i)) + 1;
+		i++;
+	}
+	i--;
+
+
+	j = 0;
+	increment = 0;
+	while (increment < len)
+	{
+		increment = (((1 << j) - 3) << j) + 1;
+		j++;
+	}
+	j--;
+
+	while (i && j)
+	{
+		
+		inc1 = (9 * ((((1 << i) - 1)) << i)) + 1;
+		inc2 = (((1 << j) - 3) << j) + 1;
+		if (inc1 > inc2)
+		{
+			increment = inc1;
+			i--;
+		}
+		else
+		{
+			increment = inc2;
+			j--;
+		}
+
+		shellSortByIncrement(array, len, increment);
+	}
+
+	while (j >= 0)
+	{
+		increment = (((1 << j) - 3) << j) + 1;
+		if (increment < 0)
+			break;
+		shellSortByIncrement(array, len, increment);
+		j--;
+	}
+
+	while (i >= 0)
+	{
+		increment = (9 * ((((1 << i) - 1)) << i)) + 1;
+		shellSortByIncrement(array, len, increment);
+		i--;
+	}
+}
+
+/*
+ *increment = 2^k - 1
+ */
+void shellSortWithHillbardIncrement(int array[], int len)
+{
+	int step = 0, i = 0;
+
+	while (step < len)
+	{
+		step = (1 << i) - 1;
+		i++;
+	}
+
+	i--;
+
+	while (i > 0)
+	{
+		step = (1 << i) - 1;
+		shellSortByIncrement(array, len, step);
+		i--;
+	}
+}
+
+/*
+ * increment = (3^k + 1)/2
+ */
+void shellSortWithKnuthIncrement(int array[], int len)
+{
+	int step = 0;
+	int i = 0;
+
+	while (step < len)
+	{
+		step = (int)pow(3, i) + 1;
+		step >>= 1;
+		i++;
+	}
+
+	i--;
+
+
+	while (i >= 0)
+	{
+		step = (int)pow(3, i) + 1;
+		step >>= 1;
+		shellSortByIncrement(array, len, step);
+		i--;
+	}
+}
+
+void shellSort(int array[], int len, shellSortIncType incType)
+{
+	switch (incType)
+	{
+	case INC_HIBBARD:
+		shellSortWithHillbardIncrement(array, len);
+		break;
+	case INC_KNUTH:
+		shellSortWithKnuthIncrement(array, len);
+		break;
+	case INC_SEDWIDGE:
+	case INC_BEST:
+	default:
+		shellSortWithSedgwickIncrement(array, len);
+		break;
+	}
+}
+
 /*
  *counting sort:
  *    
@@ -295,11 +443,15 @@ int quickPartition(int A[], int len)
 			i++;
 		else if (A[j] > pivot)
 			j--;
+		else if (A[i] == A[j])
+		{
+			i++;
+			j--;
+		}
 		else
-			swap(A + i, A + j);
+			swap(A + i, A + j);	
 	}
 
-	A[i] = pivot;
 	return i;
 }
 
@@ -345,7 +497,7 @@ void quickSort(int A[], int len)
 		return;
 	
 
-	partitionIdx = quickPartitionT(A, len);
+	partitionIdx = quickPartition(A, len);
 
 	quickSort(A, partitionIdx);                             //quickSort the first part
 	quickSort(A + partitionIdx + 1, len - partitionIdx - 1);//quickSort the last part
@@ -427,7 +579,7 @@ int selectionKthR(int A[], int len, int K)
 {
 	int ith = -1;
 
-	ith = quickPartitionT(A, len);
+	ith = quickPartition(A, len);
 	if (K == ith)
 	{
 		return A[K];
@@ -454,6 +606,9 @@ int selectionKthR(int A[], int len, int K)
 int quickSelectionPartition(int A[], int len, int pivot)
 {
 	int i, j;
+	i = 0;                    //from the begin of A
+	j = len - 1;              //from the end of A
+
 
 	i = 0;                    //from the begin of A
 	j = len - 1;              //from the end of A
@@ -463,11 +618,14 @@ int quickSelectionPartition(int A[], int len, int pivot)
 			i++;
 		else if (A[j] > pivot)
 			j--;
+		else if (A[i] == A[j])
+		{
+			i++;
+			j--;
+		}
 		else
 			swap(A + i, A + j);
-	}
-
-	A[i] = pivot;
+	}	
 	return i;
 }
 
@@ -543,3 +701,94 @@ int quickSelectKth(int A[], int len, int k)
 	}
 }
 
+int median3(int A[], int left, int right)
+{
+	int mid = left + ((right - left) >> 1);
+
+	if (A[left] > A[mid])
+		swap(A + left, A + mid);
+
+	if (A[left] > A[right])
+		swap(A + left, A + right);
+
+	if (A[mid] > A[right])
+		swap(A + mid, A + right);
+
+	swap(A + mid, A + right - 1);
+
+	return A[right - 1];
+}
+
+#define CUTTOFF (20)
+
+void Qsort(int A[], int left, int right)
+{
+	int i = 0, j = 0;
+	int pivot = -1;
+
+	if (left + CUTTOFF <= right)
+	{
+		pivot = median3(A, left, right);
+
+		i = left;
+		j = right - 1;
+
+		for (;;)
+		{
+			while (A[++i] < pivot);
+			while (A[--j] > pivot);
+			if (i < j)
+				swap(A + i, A + j);
+			else
+				break;
+		}
+
+		swap(A + i, A + right - 1);
+		Qsort(A, left, i - 1);
+		Qsort(A, i + 1, right);
+	}
+	else
+	{
+		insertionSort(A + left, right - left + 1);
+	}
+}
+
+void QuickSort(int A[], int N)
+{
+	Qsort(A, 0, N - 1);
+}
+
+void Qselect(int A[], int k, int left, int right)
+{
+	int i = 0, j = 0;
+	int pivot = -1;
+
+	if (left + CUTTOFF <= right)
+	{
+		pivot = median3(A, left, right);
+
+		i = left;
+		j = right - 1;
+
+		for (;;)
+		{
+			while (A[++i] < pivot);
+			while (A[--j] > pivot);
+			if (i < j)
+				swap(A + i, A + j);
+			else
+				break;
+		}
+
+		swap(A + i, A + right - 1);
+
+		if(k <= i)
+		    Qselect(A, k, left, i - 1);
+		else
+			Qselect(A, k, i + 1, right);
+	}
+	else
+	{
+		insertionSort(A + left, right - left + 1);
+	}
+}

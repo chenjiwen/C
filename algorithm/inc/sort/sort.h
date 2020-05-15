@@ -13,6 +13,8 @@ extern "C"
 	{
 		INC_SHELL,
 		INC_HIBBARD,
+		INC_KNUTH,
+		INC_SEDWIDGE,
 		INC_BEST
 	}shellSortIncType;
 	#define SHELL_INC_TABLE_SIZE 64
@@ -31,6 +33,8 @@ extern "C"
 	void shellsort(int array[], int len, shellSortIncType incType);
 	void bubbleSort(int array[], int len);
 	void selectionSort(int array[], int len);
+	void shellSort(int array[], int len, shellSortIncType incType);
+	void shellSortWithSedgwickIncrement(pNumArra, nums);
 	void insertionSort(int array[], int len);
 	void countingSort(int array[], int sortedArr[], int len, int k);
 	int quickPartition(int A[], int len);
@@ -41,6 +45,8 @@ extern "C"
 	int binarySearch(int A[], int len, int key);
 	void swap(int* x, int* y);
 	void merge(int sortedA[], int lenA, int sortedB[], int lenB, int sortedC[]);
+	void QuickSort(int A[], int N);
+	void Qselect(int A[], int k, int left, int right);
 
 #ifdef __cplusplus
 }
