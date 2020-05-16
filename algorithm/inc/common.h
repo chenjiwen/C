@@ -18,6 +18,7 @@ extern "C"
 #endif
 
 	void swap(int *x, int *y);
+	void printNums(int* pNumArray, int len);
 
 #ifdef __cplusplus
 }
