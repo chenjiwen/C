@@ -3,7 +3,7 @@
 /*
  *x^n = (x^2)^(n/2)
  */
-unsigned long QickPower(int exp, unsigned long base)
+int QuickPower(int exp, int base)
 {
 	if (exp == 0)
 	{
@@ -16,11 +16,11 @@ unsigned long QickPower(int exp, unsigned long base)
 
 	if (exp & 0x1)
 	{
-		return QickPower((exp - 1) >> 1, base * base) * base;
+		return QuickPower((exp - 1) >> 1, base * base) * base;
 	}
 	else
 	{
-		return QickPower(exp >> 1, base * base);
+		return QuickPower(exp >> 1, base * base);
 	}
 }
 
