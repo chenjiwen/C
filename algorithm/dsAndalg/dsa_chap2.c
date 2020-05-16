@@ -476,7 +476,7 @@ unsigned long* makePrimeTable(unsigned long num)
 	for (i = 0; i <= num; i++)
 		*(pPrimTable + i) = i;
 
-	for (i = 2; i < (unsigned long)sqrt(num); i++)
+	for (i = 2; i <= (unsigned long)sqrt(num); i++)
 	{
 		if (*(pPrimTable + i))
 		{
@@ -504,7 +504,7 @@ unsigned long* makePrimeTable(unsigned long num)
 }
 
 /*
- *decmical to binary transfer
+ *decmical to binary 
  */
 void decToBin(unsigned long x)
 {
@@ -662,8 +662,9 @@ void dsa_test_random()
 	int* nums = NULL;
 
 	printf("Please enter two number to generate the random number in [-limit, limit].\n\
-please enter the count of random number and max limit of random:");
-
+please enter the count of random number and max limit of random:\n");
+	printf("the input format is:count,limit\n");
+	srand((unsigned)time(NULL));
 	scanf_s("%d,%d", &count, &limit);
 	for (i = 0; i < count; i++)
 	{
@@ -774,11 +775,11 @@ void dsa_permutation_alg_analysis() {
 			free(pAns);
 		}
 		durationByComp[i] = duration = (double)(end - start) / CLOCKS_PER_SEC;
-		printf("numbers:%d, randomPermutation: %.4f seconds, %.4f \n", permuNumByComp[i], duration, log(permuNumByComp[i]));
+		printf("\nnumbers:%d, randomPermutation: %.4f seconds, %.4f \n", permuNumByComp[i], duration, log(permuNumByComp[i]));
 		fprintf(fp, "%10d				%10.4f\n", permuNumByComp[i], duration);
 		if (i > 0)
 		{
-			printf("duration[%d]/duration[%d]=%.2f\n", i, i - 1, durationByComp[i] / durationByComp[i - 1]);
+			printf("\nduration[%d]/duration[%d]=%.2f\n", i, i - 1, durationByComp[i] / durationByComp[i - 1]);
 		}
 	}
 	
@@ -796,11 +797,11 @@ void dsa_permutation_alg_analysis() {
 		}
 		
 		durationByArra[i] = duration = (double)(end - start) / CLOCKS_PER_SEC;
-		printf("numbers:%d, randomPermutationByArray: %.4f seconds, %.4f\n", permuNumByArra[i], duration, log(permuNumByArra[i]));
+		printf("\nnumbers:%d, randomPermutationByArray: %.4f seconds, %.4f\n", permuNumByArra[i], duration, log(permuNumByArra[i]));
 		fprintf(fp, "%10d				%10.4f\n", permuNumByArra[i], duration);
 		if (i > 0)
 		{
-			printf("duration[%d]/duration[%d]=%.2f\n", i, i - 1, durationByArra[i] / durationByArra[i - 1]);
+			printf("\nduration[%d]/duration[%d]=%.2f\n", i, i - 1, durationByArra[i] / durationByArra[i - 1]);
 		}
 	}
 
@@ -816,11 +817,11 @@ void dsa_permutation_alg_analysis() {
 			free(pAns);
 		}
 		durationBySwap[i] = duration = (double)(end - start) / CLOCKS_PER_SEC;
-		printf("numbers:%d, randomPermutationBySwap: %.4f seconds, %.4f\n", permuNumBySwap[i], duration, log(permuNumBySwap[i]));
+		printf("\nnumbers:%d, randomPermutationBySwap: %.4f seconds, %.4f\n", permuNumBySwap[i], duration, log(permuNumBySwap[i]));
 		fprintf(fp, "%10d				%10.4f\n", permuNumBySwap[i], duration);
 		if (i > 0)
 		{
-			printf("duration[%d]/duration[%d]=%.2f\n", i, i - 1, durationBySwap[i] / durationBySwap[i - 1]);
+			printf("\nduration[%d]/duration[%d]=%.2f\n", i, i - 1, durationBySwap[i] / durationBySwap[i - 1]);
 		}
 	}
 
@@ -859,7 +860,7 @@ void dsaPrimeTest()
 			break;
 		}
 		res = isPrimeNum(d);
-		printf("%d is %s a prime\n", d, res ? "" : "Not");
+		printf("%d is %s \n", d, res ? "a prime" : "NOT a prime");
 	}
 
 	printf("\n3. Input number to generate prime table:\n");

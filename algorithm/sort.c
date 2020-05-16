@@ -445,13 +445,15 @@ int quickPartition(int A[], int len)
 			j--;
 		else if (A[i] == A[j])
 		{
-			i++;
-			j--;
+			if (i < len - j)
+				i++;
+			else
+				j--;
 		}
 		else
 			swap(A + i, A + j);	
 	}
-
+	//A[i] = pivot;
 	return i;
 }
 
@@ -620,8 +622,10 @@ int quickSelectionPartition(int A[], int len, int pivot)
 			j--;
 		else if (A[i] == A[j])
 		{
-			i++;
-			j--;
+			if (i < len - j)
+				i++;
+			else
+				j--;
 		}
 		else
 			swap(A + i, A + j);
