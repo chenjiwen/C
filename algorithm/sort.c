@@ -173,7 +173,9 @@ void shellsort(int array[], int len, shellSortIncType incType)
 	}
 }
 
-
+/*
+ *shellSort internally
+ */
 void shellSortByIncrement(int array[], int len, int increment)
 {
 	int i =0, j = 0;
@@ -304,6 +306,44 @@ void shellSortWithKnuthIncrement(int array[], int len)
 	}
 }
 
+extern unsigned long* makePrimeTable(unsigned long num);
+extern int removeDupGivenVal(int* nums, int numsSize, int val);
+extern unsigned long* primeTable;
+extern unsigned long  primeTableSize ;
+/*
+ *the increment is from the prime table
+ */
+void shellRandomPrimeIncrement(int array[], int len)
+{
+	unsigned long* primeT = NULL;
+	int size = 0;
+	int allocated = 0;
+
+
+	primeT = primeTable;
+	size = primeTableSize;
+
+	if (!primeT)
+	{
+		primeT = makePrimeTable(len);
+		allocated = 1;
+		size = removeDupGivenVal(primeT, len, 0);
+	}
+
+
+	while (size)
+	{
+		shellSortByIncrement(array, len, primeT[size - 1]);
+		size >>= 1;
+	}
+
+	shellSortByIncrement(array, len, 1);
+
+	if(allocated)
+	    free(primeT);
+	
+}
+
 void shellSort(int array[], int len, shellSortIncType incType)
 {
 	switch (incType)
@@ -315,9 +355,11 @@ void shellSort(int array[], int len, shellSortIncType incType)
 		shellSortWithKnuthIncrement(array, len);
 		break;
 	case INC_SEDWIDGE:
+		shellSortWithSedgwickIncrement(array, len);
+		break;
 	case INC_BEST:
 	default:
-		shellSortWithSedgwickIncrement(array, len);
+		shellRandomPrimeIncrement(array,len);
 		break;
 	}
 }
@@ -453,8 +495,61 @@ int quickPartition(int A[], int len)
 		else
 			swap(A + i, A + j);	
 	}
-	//A[i] = pivot;
+
 	return i;
+}
+
+int quick_sort_partition(int left_idx, int right_idx, int array[])
+{
+	int sentential = 0;
+	int idx = 0;
+	int sentential_idx = 0;
+	int temp = 0;
+	int mid = 0;
+
+	//
+	mid = (left_idx + right_idx) >> 1;
+
+	//哨兵可以选取任意位置
+	sentential_idx = mid;
+	sentential = array[sentential_idx];
+
+	for (idx = left_idx; idx < right_idx; )
+	{   //找出左半部不小于给定哨兵的元素
+		if (array[idx] < sentential)
+		{
+			idx++;
+			//当前左半部的元素小于给定的元素，继续找
+			continue;
+		}
+		else
+		{
+			//当前的头部元素不小于哨兵元素，从尾部找出尾部小于给定元素的位置
+			while ((right_idx > idx) && (array[right_idx] >= sentential))
+				right_idx--;
+			if (sentential == array[right_idx])
+				sentential_idx = right_idx;
+			//找到了一个小于哨兵的元素，与前半部的小于哨兵元素交换
+			if (right_idx != idx)
+			{
+				temp = array[right_idx];
+				array[right_idx] = array[idx];
+				array[idx] = temp;
+			}
+
+			//如果idx == right_idx，则表明，当前元素与哨兵相等,退出循环，直接返回当前位置
+		}
+
+	}
+	if (array[idx] < sentential)
+	{
+		swap(&array[++idx], &array[sentential_idx]);
+	}
+	else if (array[idx] > sentential)
+	{
+		swap(&array[idx], &array[sentential_idx]);
+	}
+	return idx;
 }
 
 int quickPartitionT(int A[], int len)
@@ -499,7 +594,7 @@ void quickSort(int A[], int len)
 		return;
 	
 
-	partitionIdx = quickPartition(A, len);
+	partitionIdx = quick_sort_partition(0, len - 1, A);
 
 	quickSort(A, partitionIdx);                             //quickSort the first part
 	quickSort(A + partitionIdx + 1, len - partitionIdx - 1);//quickSort the last part
@@ -591,7 +686,7 @@ int selectionKthR(int A[], int len, int K)
 		return selectionKthR(A + ith + 1, len - ith - 1, K - ith - 1);
 	}
 	else
-	{
+	{ 
 		return selectionKthR(A, ith, K);
 	}
 }

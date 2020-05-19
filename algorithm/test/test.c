@@ -57,20 +57,26 @@ void quickSort_test(int nums, TestDataT testData)
 /*
  *void shellSort_test(int nums)
  */
+unsigned long* primeTable = NULL;
+unsigned long  primeTableSize = 0;
+extern unsigned long* makePrimeTable(unsigned long num);
+extern int removeDupGivenVal(int* nums, int numsSize, int val);
 void shellSort_test(int nums, TestDataT testData)
 {
 	clock_t begin, end;
 	int* pNumArra = NULL;
 	shellSortIncType incType = INC_SEDWIDGE;
 	char ch = 0;
+	
 
 	printf("\nplease select the increment to test, default is using the Sedgewick increment.\n");
 	printf("please input the selction:\n");
 	printf("K: Knuth increment\n");
 	printf("H: Hibbard increment\n");
 	printf("S: Sedgewick increment\n");
+	printf("R: Prime number increment\n");
 
-	while (ch != 'K' && ch != 'H' && ch != 'S')
+	while (ch != 'K' && ch != 'H' && ch != 'S' && ch != 'R')
 	{
 		scanf("%c", &ch);
 	}
@@ -83,8 +89,11 @@ void shellSort_test(int nums, TestDataT testData)
 	case 'H':
 		incType = INC_HIBBARD;
 		break;
-	default:
+	case 'S':
 		incType = INC_SEDWIDGE;
+		break;
+	default:
+		incType = INC_RANDOM_PRIME;
 		break;
 	}
 
@@ -93,6 +102,9 @@ void shellSort_test(int nums, TestDataT testData)
 	else
 		pNumArra = randomArrayBySwap(nums);
 
+	primeTable = makePrimeTable(nums);
+	primeTableSize = removeDupGivenVal(primeTable, nums, 0);
+
 	begin = clock();
 	shellSort(pNumArra, nums, incType);
 	end = clock();
@@ -100,6 +112,7 @@ void shellSort_test(int nums, TestDataT testData)
 	printf("\nshellsort: scale:%d, median:%d, duration: %.4f sec\n", nums, *(pNumArra + ((nums >> 1) - 1)), (double)(end - begin) / CLOCKS_PER_SEC);
 	printNums(pNumArra, nums);
 	free(pNumArra);
+	free(primeTable);
 }
 
 /*

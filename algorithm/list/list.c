@@ -1,6 +1,7 @@
 #include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <memory.h>
 
 struct LinkListNode* createLinkList() {
 	pLinkListNodeT pNode = NULL;
@@ -37,6 +38,9 @@ struct LinkListNode* linkListAddTail(struct LinkListNode* head, ListElemType ele
 
 	pLastNode = head;
 
+	if (!head)
+		return createListNode(elem);
+
 	while (pLastNode->next)
 		pLastNode = pLastNode->next;
 
@@ -48,10 +52,15 @@ struct LinkListNode* linkListAddTail(struct LinkListNode* head, ListElemType ele
 struct LinkListNode* linkListAddHead(struct LinkListNode* head, ListElemType elem) {
 	pLinkListNodeT pFirstNode = NULL;
 
-	pFirstNode = head;
+	if (head) {
+		pFirstNode = head;
 
-	head = createListNode(elem);
-	head->next = pFirstNode;
+		head = createListNode(elem);
+		head->next = pFirstNode;
+	}else{
+		return createListNode(elem);
+	}
+
 
 	return head;
 }
@@ -76,4 +85,248 @@ struct LinkListNode* linkListDel(struct LinkListNode* head,
 	free(toDel);
 
 	return head;
+}
+
+void destroyLinkList(struct LinkListNode* head)
+{
+	pLinkListNodeT pNode = NULL;
+	if (head)
+	{
+		pNode = head;
+		while (pNode)
+		{
+			head = head->next;
+			free(pNode);
+			pNode = head;
+		}
+	}
+}
+
+void linkListAdd(struct LinkListNode* toAdd, ListElemType elem) 
+{
+	pLinkListNodeT pNode = NULL;
+
+	pNode = createListNode(elem);
+	toAdd->next = pNode;
+}
+
+void visitList(struct LinkListNode* head)
+{
+	while (head)
+	{
+		if (head->next)
+			printf("%d->", head->elem);
+		else
+			printf("%d\n", head->elem);
+
+		head = head->next;
+	}
+}
+
+struct LinkListNode* removeElements(struct LinkListNode* head, int val) {
+	struct LinkListNode* slow = NULL;
+	struct LinkListNode* fast = NULL;
+	pLinkListNodeT pNode = NULL;
+
+	struct LinkListNode node;
+
+	if (!head)
+		return head;
+
+	slow = &node;
+	slow->next = head;
+	fast = head;
+	while (fast)
+	{
+		if (fast->elem == val)
+		{
+			pNode = fast;
+			slow->next = fast->next;
+			fast = fast->next;
+			free(pNode);	
+		}
+		else
+		{
+			fast = fast->next;
+			slow = slow->next;
+		}
+	}
+	return node.next;
+}
+
+struct LinkListNode** splitListToParts(struct LinkListNode* root, int k, int* returnSize) {
+	int listSz = 0, rem = 0, i = 0, j = 0;
+	int segSz = 0;
+	struct LinkListNode* pNode = NULL, * pTemp = NULL;
+	struct LinkListNode** res = NULL;
+
+	pNode = root;
+	listSz = 0;
+	while (pNode) {
+		pNode = pNode->next;
+		listSz++;
+	}
+
+	rem = listSz % k;
+	segSz = listSz / k;
+
+	*returnSize = k;
+
+	res = (struct LinkListNode**)malloc((*returnSize) * sizeof(struct LinkListNode*));
+	memset(res, 0, (*returnSize) * sizeof(struct LinkListNode*));
+
+	pNode = root;
+	for (i = 0; i < *returnSize; i++) {
+		res[i] = pNode;
+		j = 0;
+		while (j < segSz) {
+			j++;
+			pTemp = pNode;
+			pNode = pNode->next;
+		}
+
+		if (rem)
+		{
+			rem--;
+			pTemp = pNode;
+			pNode = pNode->next;
+		}
+		if (pTemp)
+			pTemp->next = NULL;
+	}
+
+	return res;
+}
+
+extern struct LinkListNode* linkListReverse(struct LinkListNode* head);
+
+bool isPalindrome(struct LinkListNode* head) {
+	struct LinkListNode* slow, * fast;
+	struct LinkListNode* pNode = NULL;
+
+	slow = head;
+	fast = head;
+
+	if (!head || !head->next)
+		return true;
+
+	while (fast && fast->next) {
+		pNode = slow;
+		slow = slow->next;
+		fast = fast->next->next;
+	}
+
+	if (fast && !fast->next)
+		pNode = slow;
+
+	slow = linkListReverse(slow);
+
+	if (pNode)
+		pNode->next = NULL;
+
+	while (slow && head && slow->elem == head->elem) {
+		slow = slow->next;
+		head = head->next;
+	}
+
+	return slow == NULL && head == NULL;
+}
+
+struct LinkListNode* rotateRight(struct LinkListNode* head, int k) {
+	struct LinkListNode* tail = NULL;
+	int listLen = 0;
+	struct LinkListNode* pNode = NULL;
+
+	listLen = 1;
+	tail = head;
+	while (tail->next)
+	{
+		listLen++;
+		tail = tail->next;
+	}
+
+	tail->next = head;
+	k %= listLen;
+	k = listLen - k;
+	pNode = tail;
+
+	while (k--)
+	{
+		pNode = pNode->next;
+	}
+
+	head = pNode->next;
+	pNode->next = NULL;
+
+	return head;
+}
+
+void listTest()
+{
+	int num = 20;
+	int i = 0;
+	int nums[] = {1,2,6,3,4,5,6};
+	pLinkListNodeT* pRes = NULL;
+	pListNodeT head = NULL;
+	int numsA[] = { 1,0,1 };
+	int res = -1;
+	printf("\n********Welcome to list test unit********\n");
+	for (i = 20; i > 0; i--)
+	{
+		head = linkListAddHead(head, i);
+	}
+
+	visitList(head);
+
+	destroyLinkList(head);
+	head = NULL;
+
+	//leetcode splitListToParts
+	for (i = 0; i < sizeof(nums) / sizeof(nums[0]); i++) 
+	{
+		head = linkListAddTail(head, nums[i]);
+	}
+	visitList(head);
+
+	//leetcode remove val from link list
+	removeElements(head, 6);
+	visitList(head);
+
+	//leetcode splitListToParts
+	pRes = splitListToParts(head, 6, &num);
+	printf("splitListToParts:\n");
+	for (i = 0; i < num; i++)
+	{
+		visitList(pRes[i]);
+		destroyLinkList(pRes[i]);
+	}
+	free(pRes);
+	head = NULL;
+
+	//leetcode-palindrome link list
+	for (i = 0; i < sizeof(numsA) / sizeof(numsA[0]); i++)
+	{
+		head = linkListAddTail(head, numsA[i]);
+	}
+	visitList(head);
+
+	res = isPalindrome(head);
+	printf("It %s palindrome link list\n", res ? "is" : "is Not");
+
+	destroyLinkList(head);
+	head = NULL;
+
+	//leedcode rotation link list
+	for (i = 5; i > 0; i--)
+	{
+		head = linkListAddHead(head, i);
+	}
+	visitList(head);
+
+	head = rotateRight(head, 3);
+	printf("\nlist after rotation:\n");
+	visitList(head);
+	destroyLinkList(head);
+
+	head = NULL;
 }

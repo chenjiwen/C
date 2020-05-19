@@ -5,7 +5,10 @@
 extern void dsa_chap2_test();
 extern void math_test();
 extern void sort_algo_perf_analysis();
-
+extern void listTest();
+extern void dsaChap3Test();
+extern void stackTest();
+extern void arrayTest();
 
 typedef enum 
 {
@@ -32,6 +35,7 @@ char* alg_project[] = {
 	"dynamic programming",
 	"divide concur",
 	"misc",
+	"chap",
 	NULL,
 };
 
@@ -68,9 +72,14 @@ int main(int argc, char **argv)
 	AlgItem alg = ALG_ALL;
 	int nums[] = { 0,0,0,0,0,0,0,0,0,0,1,0,0 };
 	int value = -1;
+	int chap = -1;
 	dumpProgramParam(argc, argv);
 	alg = getOp(argc, argv);
-	dsa_chap2_test();
+	listTest();
+	arrayTest();
+	dsaChap3Test();
+	if(chap == 2)
+	    dsa_chap2_test();
 
 	value = quickSelectKth(nums, 13, 2);
 

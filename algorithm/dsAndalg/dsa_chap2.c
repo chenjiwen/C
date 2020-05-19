@@ -485,21 +485,25 @@ unsigned long* makePrimeTable(unsigned long num)
 		}
 	}
 
-	printf("Prime number table less than:%10d\n", num);
-	k = 0;
-	for (i = 2; i < num; i++)
+	if (0)
 	{
-		if (pPrimTable[i])
+		printf("Prime number table less than:%10d\n", num);
+		k = 0;
+		for (i = 2; i < num; i++)
 		{
-			printf("%10d", pPrimTable[i]);
-			k++;
-			if (k % 5 == 0)
+			if (pPrimTable[i])
 			{
-				printf("\n");
+				printf("%10d", pPrimTable[i]);
+				k++;
+				if (k % 5 == 0)
+				{
+					printf("\n");
+				}
 			}
-		}
 
+		}
 	}
+
 	return pPrimTable;
 }
 
@@ -598,6 +602,7 @@ double quickPow(double x, int n)
  *算法3：
  *    利用一个map<int, int>,扫描数组，对key出现的次数进行更新，类似于桶排序/计数排序
  */
+
 int SelectPivot(int A[], int len)
 {
 	int i = 0, k = 0;
@@ -609,6 +614,11 @@ int SelectPivot(int A[], int len)
 	if (len == 1)
 	{
 		return A[0];
+	}
+
+	if (len == 2)
+	{
+		return PIVOT_FLAG;
 	}
 
 	while (i + 1 < len)
@@ -628,18 +638,12 @@ int SelectPivot(int A[], int len)
 	return SelectPivot(A, k);
 }
 
-int FindPivot(int A[], int len)
+int isCandidatePivot(int candidate, int A[], int len)
 {
-	int candidate = -1;
+	int i = -1;
 	int count = 0;
-	int i = 0;
 
-	candidate = SelectPivot(A, len);
-	if (candidate == -1)
-	{
-		return -1;
-	}
-
+	i = 0;
 	while (i < len)
 	{
 		if (candidate == A[i++])
@@ -647,7 +651,56 @@ int FindPivot(int A[], int len)
 	}
 
 	if (count >= ((len >> 1) + 1))
-		return candidate;
+		return TRUE;
+
+	return FALSE;
+}
+
+int FindPivot(int A[], int len)
+{
+	int candidate = -1;
+	int count = 0;
+	int i = 0;
+	int* pTemBuff;
+	int candidate2 = -1, candidate1 = -1;
+	int isCanPivot = FALSE;
+
+	pTemBuff = (int*)malloc(len * sizeof(int));
+
+	for (i = 0; i < len; i++)
+	{
+		pTemBuff[i] = A[i];
+	}
+
+	candidate = SelectPivot(pTemBuff, len);
+	if (candidate == -1)
+	{
+		return -1;
+	}
+
+	if (PIVOT_FLAG == candidate)
+	{
+		candidate1 = pTemBuff[0];
+		candidate2 = pTemBuff[1];
+	}
+
+	free(pTemBuff);
+
+	if (PIVOT_FLAG == candidate)
+	{
+		isCanPivot = isCandidatePivot(candidate1, A, len);
+		if (isCanPivot)
+			return candidate1;
+		isCanPivot = isCandidatePivot(candidate1, A, len);
+		if (isCanPivot)
+			return candidate2;
+	}
+	else
+	{
+		isCanPivot = isCandidatePivot(candidate, A, len);
+		if (isCanPivot)
+			return candidate;
+	}
 
 	return -1;
 }
