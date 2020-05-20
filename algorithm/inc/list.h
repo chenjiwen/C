@@ -9,6 +9,7 @@ extern "C"
 #endif
 #include "common.h"
 	typedef int ListElemType;
+	typedef int DListElemType;
 	typedef struct LinkListNode
 	{
 		ListElemType elem;
@@ -17,10 +18,10 @@ extern "C"
 
 	typedef struct DLinkListNode 
 	{
-		ListElemType elem;
+		DListElemType elem;
 		struct DLinkListNode* prev;
 		struct DLinkListNode* next;
-	}DLinkListNodeT, *pDLinkListNodeT, *pDListNodeT;
+	}DLinkListNodeT, *pDLinkListNodeT, *pDListT;
 
 	typedef struct polyNode {
 		struct polyNode* next;
@@ -29,17 +30,28 @@ extern "C"
 
 	}polyNodeT,*pPolyNodeT;
 
-	struct LinkListNode* createLinkList();
+	struct LinkListNode* createListNode(ListElemType elem);
 	void destroyLinkList(struct LinkListNode* head);
 	struct LinkListNode* linkListFind(struct LinkListNode* head, ListElemType key);
 	struct LinkListNode* linkListAddTail(struct LinkListNode* head, ListElemType elem);
 	struct LinkListNode* linkListAddHead(struct LinkListNode* head, ListElemType elem);
 	void linkListAdd(struct LinkListNode* toAdd, ListElemType elem);
 	struct LinkListNode* linkListDel(struct LinkListNode* head, struct LinkListNode* toDel);
+	struct LinkListNode* linkListRemoveHead(struct LinkListNode** head);
 	void visitList(struct LinkListNode* head);
+	struct LinkListNode* makeCircleList(struct LinkListNode* head, ListElemType elem);
 
 
-	struct DLinkListNode* createDLinkList();
+	struct DLinkListNode* createDLLNode(DListElemType elem);
+	struct DLinkListNode* DLListAdd(struct DLinkListNode* head, 
+		                            struct DLinkListNode* pNode, 
+		                            struct DLinkListNode* pToAdd);
+	struct DLinkListNode* DLListDel(struct DLinkListNode* head, 
+		                            struct DLinkListNode* pNode);
+	struct DLinkListNode* DLListAddToTail(struct DLinkListNode* head,
+		                                  struct DLinkListNode* pToAdd);
+	struct DLinkListNode* DLListAddToHead(struct DLinkListNode* head,
+		                                  struct DLinkListNode* pToAdd);
 	void destroyDLinkList(struct DLinkListNode*);
 
 #ifdef __cplusplus

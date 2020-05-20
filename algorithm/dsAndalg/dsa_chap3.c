@@ -1,3 +1,16 @@
+/***************************************************************************************
+ *
+ *
+ *
+ *Author: Jiwen CHEN <chen1984jiwen@163.com>
+ *
+ *
+ *
+ *
+ *
+ *
+ ****************************************************************************************/
+
 #include<stdio.h>
 #include<memory.h>
 #include<stdlib.h>
@@ -6,14 +19,13 @@
 
 /*
  *3.1打印链表
+ *    算法：递归实现
+ *
  */
 void printList(pLinkListNodeT head)
 {
 	if (!head)
-	{
 		return;
-	}
-
 
 	if (head->next)
 		printf("%d->", head->elem);	
@@ -49,6 +61,11 @@ void printLots(pLinkListNodeT L, pLinkListNodeT P)
 
 /*
  *3.3 交换相邻的两个元素
+ *
+ *算法描述：
+ *    a1->a2->a3->a4...->an->NULL
+ *    递归调用交换a3->a4->...->NULL
+ *    再调整a1,a2
  */
 
 struct LinkListNode* linkListSwapNeighbor(struct LinkListNode* head)
@@ -71,9 +88,10 @@ struct LinkListNode* linkListSwapNeighbor(struct LinkListNode* head)
 	return phead;
 }
 
-/*
- *构建listEven/listOdd
- *然后再按照even/odd插入
+/**3.3 交换相邻的两个元素
+ *算法描述：
+ *    先遍历原始链表的时候，把原始链表分割成奇偶两部分，然后再按照先偶后奇插入
+ *
  */
 struct LinkListNode* linkListSwapNeighborNode(struct LinkListNode* head)
 {
@@ -139,6 +157,12 @@ struct LinkListNode* linkListSwapNeighborNode(struct LinkListNode* head)
 	return node.next;
 }
 
+
+/**3.3 交换相邻的两个元素
+ *算法描述：
+ *    设置快慢指针，然后按照a1->a2, a2->a3两两交换
+ *
+ */
 struct LinkListNode* linkListSwapPairs(struct LinkListNode* head) 
 {
 	pLinkListNodeT slow = NULL;
@@ -213,7 +237,7 @@ struct LinkListNode* sortedListUnion(struct LinkListNode* listA, struct LinkList
 	return node.next;
 }
 
-/*
+/*合并两个有序链表：
  *sortedListMerge
  */
 struct LinkListNode* sortedListMerge(struct LinkListNode* listA, struct LinkListNode* listB)
@@ -278,7 +302,8 @@ struct LinkListNode* sortedListIntersection(struct LinkListNode* listA, struct L
 
 /*
  *对于一个链表进行归并排序
- *listMergeSort():  
+ *listMergeSort(): 
+ *    利用快慢指针对链表进行划分，然后递归的调用，最后一步是merge
  */
 struct LinkListNode* listMergeSort(struct LinkListNode* list)
 {
@@ -317,11 +342,21 @@ struct LinkListNode* listMergeSort(struct LinkListNode* list)
  */
 void printPoly(struct polyNode* poly)
 {
+	int hasZero = 0;
 	while (poly)
 	{
 		if (poly->deg)
 		{
-			printf("%s", poly->coef > 0 ? "+" : "-");
+			if (!hasZero)
+			{
+				hasZero = 1;//dummy/hack has zero
+				printf("%s", poly->coef > 0 ? "" : "-");
+			}
+			else
+			{
+				printf("%s", poly->coef > 0 ? "+" : "-");
+			}
+			    
 			if (poly->coef != 1 && poly->coef != -1)
 			{
 				printf("%d", poly->coef > 0 ? poly->coef : -poly->coef);
@@ -337,12 +372,24 @@ void printPoly(struct polyNode* poly)
 			}
 		}
 		else
+		{
 			printf("%d", poly->coef);
+			hasZero = 1;
+		}
+			
 
 		poly = poly->next;
 	}
 	printf("\n");
 }
+/*
+ *polyAdd(struct polyNode* polyA, struct polyNode* polyB):
+ *    polyA:
+ *    polyB:
+ *    return:struct polyNode*
+ *    在计算的过程中，不重新分配资源，对原始资源进行整合，同时释放相应的资源
+ *    调用者需要在适当的时机调用destroyPoly()释放本函数返回的资源/指针
+ */
 struct polyNode* polyAdd(struct polyNode* polyA, struct polyNode* polyB)
 {
 	struct polyNode poly;
@@ -397,6 +444,12 @@ struct polyNode* polyAdd(struct polyNode* polyA, struct polyNode* polyB)
 	return poly.next;
 }
 
+/*
+ *polyMulXexp:
+ *    计算f(x)*x^n
+ *
+ *    为结果动态的分配资源，调用者需要在适当的时机释放资源
+ */
 struct polyNode* polyMulXexp(struct polyNode* poly, int coef, int deg)
 {
 	pPolyNodeT pNode = NULL, ptemp = NULL;
@@ -420,6 +473,7 @@ struct polyNode* polyMulXexp(struct polyNode* poly, int coef, int deg)
 
 	return polyMulx.next;
 }
+
 /*3.7 多项式相乘
  *f(x) = a0 + a1*x + a2*x^2 + ... + an*x^n
  *g(x) = b0 + b1*x + b2*x^2 + ... + bm*x^m
@@ -430,7 +484,6 @@ struct polyNode* polyMulXexp(struct polyNode* poly, int coef, int deg)
 struct polyNode* polyMul(struct polyNode* polyA, struct polyNode* polyB)
 {
 	pPolyNodeT polyMult = NULL;
-	pPolyNodeT polyMulx = NULL;
 
 	while (polyB)
 	{
@@ -442,7 +495,13 @@ struct polyNode* polyMul(struct polyNode* polyA, struct polyNode* polyB)
 }
 
 
-
+/*
+ *struct polyNode* makePoly(int *coeff, int deg)：
+ *    coeff： 多项式系数矩阵/数组，对于系数为0的需要补齐，数组的第i项对应于多项式的第i次
+ *    deg:    多项式的最大次数
+ *    return: 多项式的结构指针，按照幂升序
+ *    
+ */
 struct polyNode* makePoly(int *coeff, int deg)
 {
 	struct polyNode poly;
@@ -471,6 +530,10 @@ struct polyNode* makePoly(int *coeff, int deg)
 	return poly.next;
 }
 
+/*
+ *destroyPoly(struct polyNode* poly)：
+ *    poly： 需要被销毁的多项式
+ */
 void destroyPoly(struct polyNode* poly)
 {
 	struct polyNode* pNode = NULL;
@@ -487,8 +550,8 @@ void destroyPoly(struct polyNode* poly)
 }
 
 /*
- *3.8
- *   多项式的幂
+ *3.8 多项式的幂
+ *   
  */
 struct polyNode* polyPow(struct polyNode* poly, int n)
 {
@@ -511,12 +574,312 @@ struct polyNode* polyPow(struct polyNode* poly, int n)
 	return polyPower;
 }
 
+
+struct polyNode* polyPower(int *coef, int deg, int n)
+{
+	struct polyNode* polyA, *polyP;
+
+	polyA = makePoly(coef, deg);
+	polyP = polyPow(polyA, n);
+	printf("original poly is:\n");
+	printPoly(polyA);
+	printf("\nthe power %d of poly:\n", n);
+	printPoly(polyP);
+
+	return polyP;
+}
 /*
  *3.9  编写任意精度的整数运算包
+ *
+ *123 在链表中存储方式为3->2->1，低位在前，高位在后，幂升排序
  */
+struct LinkListNode* num2List(int num)
+{
+	pLinkListNodeT pNumList = NULL;
+
+	pNumList = linkListAddTail(pNumList, num % 10);;
+
+	num = num / 10;
+	while (num)
+	{
+		pNumList = linkListAddTail(pNumList, num % 10);
+		num = num / 10;
+	}
+
+	return pNumList;
+}
+
+/*
+ *return the list which stores the sum of a and b
+ *didn't allocate new memory, just use the memory of pLa and pLb
+ *the list of pLa and pLb will be changed, the caller should free 
+ *pLa, pLb explictly
+ */
+struct LinkListNode* numsAdd(struct LinkListNode* pLa, struct LinkListNode* pLb)
+{
+	int carrier = 0;
+	pLinkListNodeT pNodeA = NULL, pNodeB = NULL;
+	LinkListNodeT listSum;
+	listSum.next = NULL;
 
 
+	if (pLa)
+		listSum.next = pLa;
+	else if (pLb)
+		listSum.next = pLb;
+	else
+		return NULL;
 
+	while (pLa && pLb)
+	{
+		pLa->elem += pLb->elem + carrier;
+		carrier = pLa->elem / 10;
+		pLa->elem %= 10;
+		pNodeB = pLb;
+		pNodeA = pLa;
+		pLa = pLa->next;
+		pLb = pLb->next;
+	}
+
+	if (pLb)
+	{
+		if (pNodeA)
+		{
+			pNodeA->next = pLb;
+			pNodeB->next = NULL;
+		}
+		pLa = pLb;
+	}
+		
+
+	while(pLa && carrier)
+	{
+		pLa->elem += carrier;
+		carrier = pLa->elem / 10;
+		pLa->elem %= 10;
+		pNodeA = pLa;
+		pLa = pLa->next;
+	}
+
+	if (carrier) 
+	{
+		pNodeA->next = createListNode(carrier);
+	}
+
+	return listSum.next;
+}
+
+/*
+ *create a new list to store the result of num*10^n
+ */
+struct LinkListNode* numsMul(struct LinkListNode* pLNum, int num, int n)
+{
+	pLinkListNodeT pMulRes = NULL;
+	pLinkListNodeT pNode = NULL;
+	LinkListNodeT NumMulList;
+	int carry = 0;
+
+	pMulRes = &NumMulList;
+
+	while (pLNum)
+	{
+		pNode = (pLinkListNodeT)malloc(sizeof(struct LinkListNode));
+		pNode->elem = pLNum->elem * num;
+		pNode->elem += carry;
+		pNode->next = NULL;
+		carry = pNode->elem / 10;
+		pNode->elem %= 10;
+		pMulRes->next = pNode;
+		pMulRes = pMulRes->next;
+		pLNum = pLNum->next;
+	}
+
+	if (carry)
+		pMulRes->next = createListNode(carry);
+
+	while (n--)
+		NumMulList.next = linkListAddHead(NumMulList.next, 0);
+
+	return NumMulList.next;
+}
+/*
+ *create a list to store the result of A multipled by B
+ */
+struct LinkListNode* numsMultply(struct LinkListNode* pLNumA, struct LinkListNode* pLNumb)
+{
+	int pos = 0;
+	struct LinkListNode* pNumRes = NULL;
+	struct LinkListNode* pNode = NULL;
+
+	while (pLNumb)
+	{
+		pNode = pNumRes;
+		pNumRes = numsMul(pLNumA, pLNumb->elem, pos);
+		pNumRes = numsAdd(pNumRes, pNode);
+		destroyLinkList(pNode);
+		pos++;
+		pLNumb = pLNumb->next;
+	}
+	return pNumRes;
+}
+
+
+void printListNums(struct LinkListNode* pListNum)
+{
+	while (pListNum)
+	{
+		printf("%d", pListNum->elem);
+		pListNum = pListNum->next;
+	}
+	printf("\n");
+}
+
+struct LinkListNode* powerList(int x, int exp) {
+	struct LinkListNode* pLa, *pLb;
+	struct LinkListNode* pNumList;
+	unsigned long digit[10] = { 0 };
+	int i = 0;
+
+	pLa = num2List(1);
+	pLb = num2List(x);
+	pNumList = NULL;
+	for (i = 0; i < exp; i++)
+	{
+		pNumList = pLa;
+		pLa = numsMultply(pLa, pLb);
+		destroyLinkList(pNumList);
+	}
+	destroyLinkList(pLb);
+	pNumList = pLa;
+	while (pLa)
+	{
+		digit[pLa->elem]++;
+		pLa = pLa->next;
+	}
+	printf("the digit counting of %d^(%d) is following:\n", x, exp);
+	for (i = 0; i < 10; i++)
+	{
+		printf("digit: %d -- count: %d\n", i, digit[i]);
+	}
+	return pNumList;
+}
+
+/*
+ *Josephus game
+ */
+int JosephusGameOpt(int M, int N, pLinkListNodeT* pFreeList)
+{
+	pLinkListNodeT head = NULL;
+	pLinkListNodeT prev = NULL;
+	LinkListNodeT FreeList;
+	pLinkListNodeT pFreeNode = &FreeList;
+
+	int i = 0;
+	int round = 0;
+	int res = -1;
+
+	if (M == 0)
+		return N;
+
+	for (i = 1; i <= N; i++) 
+	{
+		head = makeCircleList(head, i);
+	}
+
+	if (!head)
+		return res;
+
+	while (head->next != head)
+	{
+		round = M;
+		while (round)
+		{
+			prev = head;
+			head = head->next;
+			round--;
+		}
+
+		prev->next = head->next;
+		//printf("JosephusGame: %d removed\n", head->elem);
+		pFreeNode->next = head;
+		head->next = NULL;
+		pFreeNode = pFreeNode->next;
+		head = prev->next;	
+	}
+
+	res = head->elem;
+	//destroy(head);
+	//destroyLinkList(FreeList.next);
+	*pFreeList = FreeList.next;
+
+	return res;
+}
+
+int JosephusGame(int M, int N)
+{
+	pLinkListNodeT head = NULL;
+	pLinkListNodeT prev = NULL;
+
+	int i = 0;
+	int round = 0;
+	int res = -1;
+
+	if (M == 0)
+		return N;
+
+	for (i = 1; i <= N; i++)
+	{
+		head = makeCircleList(head, i);
+	}
+
+	if (!head)
+		return res;
+
+	while (head->next != head)
+	{
+		round = M;
+		while (round)
+		{
+			prev = head;
+			head = head->next;
+			round--;
+		}
+
+		prev->next = head->next;
+		//printf("JosephusGame: %d removed\n", head->elem);
+		free(head);
+		head = prev->next;
+	}
+
+	res = head->elem;
+	free(head);
+
+	return res;
+}
+
+void JosephusTest()
+{
+	int M, N;
+	int res = -1;
+	clock_t start, end;
+	pLinkListNodeT pFreeList = NULL;
+
+	printf("JosephusTest,please enter two nums:\n");
+	printf(">>:");
+	scanf("%d %d", &M, &N);
+
+	start = clock();
+	res = JosephusGame(M, N);
+	end = clock();
+	printf("JosephusGame:%d, duration:%.4f\n", res, (double)(end - start)/CLOCKS_PER_SEC);
+
+	start = clock();
+	res = JosephusGameOpt(M, N, &pFreeList);
+	end = clock();
+	printf("JosephusGame:%d, duration:%.4f\n", res, (double)(end - start) / CLOCKS_PER_SEC);
+
+	destroyLinkList(pFreeList);
+}
 
 /*
  *3.12 反转一个链表
@@ -540,6 +903,8 @@ struct LinkListNode* linkListReverse(struct LinkListNode* head)
 
 	return node.next;
 }
+
+
 /*3.12
  *迭代反转
  *p->q->r->....
@@ -589,6 +954,7 @@ struct LinkListNode* linkListReverseRecursively(struct LinkListNode* head)
 
 
 #define POLY_TEST_MAX_EXPON 100
+#define BUFSIZE 512
 void polyTest()
 {
 	int coeffA[] = { 2, -1, 0, 3, 0, 0, 1 }; 
@@ -638,7 +1004,8 @@ void polyTest()
 	int* polyCoffB;
 	int* polyCoffA;
 
-	for(i = 0; i < 5; i++)
+	printf("******    This part is to test the performance of poly multiply     *****\n");
+	for(i = 0; i < sizeof(deg)/sizeof(deg[0]); i++)
 	{
 		polyCoffA = (int*)malloc(sizeof(int) * (deg[i] + 1));
 		polyCoffB = (int*)malloc(sizeof(int) * (deg[i] + 1));
@@ -662,6 +1029,7 @@ void polyTest()
 		free(polyCoffA);
 		free(polyCoffB);
 	}
+	printf("******    poly multiply test DONE     *****\n");
 
 	int polyCoff[] = { 1,1 };
 	polyA = makePoly(polyCoff, 1);
@@ -669,7 +1037,152 @@ void polyTest()
 	printPoly(polyA);
 	printf("****polyPow:\n");
 	printPoly(polyP);
+	
+	destroyPoly(polyA);
+	destroyPoly(polyP);
+	polyA = NULL;
+	polyP = NULL;
+
+	char buf[BUFSIZE];
+	int  coef[BUFSIZE];
+	int exp = 0;
+	int power = 0;
+	
+	printf("power of poly test:\n");
+	printf("please enter the cofficient of the poly:\n");
+	printf(">>:");
+	fgets(buf, BUFSIZE, stdin);
+	exp = 0;
+	for (i = 0; i < BUFSIZE; i++)
+	{
+		if (buf[i] == '\0' || buf[i] == '\n')
+			break;
+		if (buf[i] == ' ' || buf[i] == '\t')
+			continue;
+		coef[exp++] = buf[i] - '0';
+	}
+
+	printf("please enter the power:\n");
+	printf(">>:");
+	scanf("%d", &power);
+
+	polyP = polyPower(coef, exp - 1, power);
+	//printPoly(polyP);
+
+	destroyPoly(polyP);
+
 	printf("****polyTest end****\n");
+}
+
+
+void numListTest()
+{
+	struct LinkListNode* pNumList = NULL;
+
+	int num = 123;
+	int i = 0;
+	char ch = 0;
+	unsigned long digit[10] = { 0 };
+
+	pNumList = num2List(num);
+	//visitList(pNumList);
+	destroyLinkList(pNumList);
+
+	struct LinkListNode* pLa, * pLb;
+	int numa, numb;
+	char buf[BUFSIZE] = {0};
+
+	numa = 135;
+	numb = 13;
+	pLa = num2List(numa);
+	pLb = num2List(numb);
+
+	pNumList = numsMul(pLa, 3, 1);
+
+	//printList(pNumList);
+	destroyLinkList(pNumList);
+	pNumList = NULL;
+
+	pNumList = numsMultply(pLa, pLb);
+	pNumList = linkListReverse(pNumList);
+	//printList(pNumList);
+	destroyLinkList(pNumList);
+	pNumList = NULL;
+
+	pNumList = numsAdd(pLa, pLb);
+	pNumList = linkListReverse(pNumList);
+	//printList(pNumList);
+
+	destroyLinkList(pNumList);
+	destroyLinkList(pLb);
+
+	pLa = pLb = NULL;
+	printf("Big number multiplier test:\n");
+	printf("please enter num A:\n");
+
+need_input_again:
+	memset(buf, 0, BUFSIZE);
+	fgets(buf, BUFSIZE, stdin);
+	for (i = 0; i < BUFSIZE; i++)
+	{
+		if (i == 0 && buf[0] == '\n')
+			goto need_input_again;
+
+		if (buf[i] == '\0' || buf[i] == '\n')
+			break;
+
+		pLa = linkListAddHead(pLa, buf[i] - '0');
+	}
+	//visitList(pLa);
+	memset(buf, 0, BUFSIZE);
+	printf("please enter num B:\n");
+	fgets(buf, BUFSIZE, stdin);
+	for (i = 0; i < BUFSIZE; i++)
+	{
+		if (buf[i] == '\0' || buf[i] == '\n')
+			break;
+
+		pLb = linkListAddHead(pLb, buf[i] - '0');
+	}
+	//visitList(pLb);
+	pNumList = numsMultply(pLa, pLb);
+	pNumList = linkListReverse(pNumList);
+	printf("The result is:\n");
+	printListNums(pNumList);
+	destroyLinkList(pNumList);
+	destroyLinkList(pLa);
+	destroyLinkList(pLb);
+
+	num = 2;
+	pLa = num2List(1);
+	pLb = num2List(2);
+	pNumList = NULL;
+	for (i = 0; i < 4000; i++)
+	{
+		pNumList = pLa;
+		pLa = numsMultply(pLa, pLb);
+		destroyLinkList(pNumList);
+	}
+	destroyLinkList(pLb);
+	pNumList = pLa;
+	while (pLa)
+	{
+		digit[pLa->elem]++;
+		pLa = pLa->next;
+	}
+	printf("the digit counting of 2^4000 is following:\n");
+	for (i = 0; i < 10; i++)
+	{
+		printf("digit: %d -- count: %d\n", i, digit[i]);
+	}
+	destroyLinkList(pNumList);
+
+	int base = 0, exp = 0;
+	printf("power of big number test:\n");
+	printf("please enter base and exponent:\n");
+	scanf("%d %d", &base, &exp);
+	pNumList = powerList(base, exp);
+	destroyLinkList(pNumList);
 }
 
 void dsaChap3Test()
@@ -815,4 +1328,10 @@ void dsaChap3Test()
 
 	//poly test
 	polyTest();
+
+	//num test
+	numListTest();
+
+	//JosephusTest()
+	JosephusTest();
 }

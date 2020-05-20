@@ -3,14 +3,6 @@
 #include <stdlib.h>
 #include <memory.h>
 
-struct LinkListNode* createLinkList() {
-	pLinkListNodeT pNode = NULL;
-
-	pNode = (pLinkListNodeT)malloc(sizeof(LinkListNodeT));
-
-	return pNode;
-}
-
 struct LinkListNode* createListNode(ListElemType elem) {
 	pLinkListNodeT pNode = NULL;
 
@@ -45,6 +37,39 @@ struct LinkListNode* linkListAddTail(struct LinkListNode* head, ListElemType ele
 		pLastNode = pLastNode->next;
 
 	pLastNode->next = createListNode(elem);
+
+	return head;
+}
+
+struct LinkListNode* linkListRemoveHead(struct LinkListNode** head)
+{
+	pLinkListNodeT pFirstNode = NULL;
+	pFirstNode = *head;
+	*head = pFirstNode->next;
+
+	return pFirstNode;
+}
+
+struct LinkListNode* makeCircleList(struct LinkListNode* head, ListElemType elem)
+{
+	pLinkListNodeT pLastNode = NULL;
+
+	pLastNode = head;
+
+	if (!head)
+	{
+		head = createListNode(elem);
+		head->next = head;
+		return head;
+	}
+		
+
+	while (pLastNode->next != head)
+		pLastNode = pLastNode->next;
+
+	pLastNode->next = createListNode(elem);
+	pLastNode = pLastNode->next;
+	pLastNode->next = head;
 
 	return head;
 }
@@ -120,6 +145,105 @@ void visitList(struct LinkListNode* head)
 			printf("%d\n", head->elem);
 
 		head = head->next;
+	}
+}
+
+struct DLinkListNode* createDLLNode(DListElemType elem)
+{
+	pDLinkListNodeT pDLNode = NULL;
+
+	pDLNode = (pDLinkListNodeT)malloc(sizeof(DLinkListNodeT));
+	pDLNode->elem = elem;
+	pDLNode->next = pDLNode;
+	pDLNode->prev = pDLNode;
+
+	return pDLNode;
+}
+
+/*
+ *Add a node next to pNode, return head
+ *link the node pToAdd with pNode->next
+ */
+struct DLinkListNode* DLListAdd(struct DLinkListNode* head, 
+	                            struct DLinkListNode* pNode, 
+	                            struct DLinkListNode* pToAdd)
+{
+	if (!head)
+		return pToAdd;
+
+	if (!pNode)
+		pNode = head->next;
+
+	pNode->next->prev = pToAdd;
+	pToAdd->next = pNode->next;
+	pToAdd->prev = pNode;
+	pNode->next = pToAdd;
+
+	return head;
+}
+
+/*
+ *add the node to the head the DLinkList
+ */
+struct DLinkListNode* DLListAddToHead(struct DLinkListNode* head, 
+	                                  struct DLinkListNode* pToAdd)
+{
+	return DLListAdd(head, head->next, pToAdd);
+}
+
+
+/*
+ *add the node to the tail of the DLinkList
+ */
+struct DLinkListNode* DLListAddToTail(struct DLinkListNode* head,  
+	                                  struct DLinkListNode* pToAdd)
+{
+	return DLListAdd(head, head->prev, pToAdd);
+}
+
+/*
+ *Delete pToDel from the DLinkList pointed to head
+ *return the head 
+ */
+struct DLinkListNode* DLListDel(struct DLinkListNode* head, struct DLinkListNode* pToDel)
+{
+	if (!pToDel)
+		return head;
+
+	if (pToDel == head && pToDel->next == head)
+	{
+		free(pToDel);
+		return NULL;
+	}
+
+	pToDel->prev->next = pToDel->next;
+	pToDel->next->prev = pToDel->prev;
+
+	free(pToDel);
+
+	return head;
+}
+
+struct DLinkListNode* DLListFind(struct DLinkListNode* head, DListElemType elem)
+{
+	pDLinkListNodeT pDLNode = NULL;
+
+	if (!head || (head->elem == elem))
+		return head;
+	
+	pDLNode = head->next;
+	while (pDLNode != head && pDLNode->elem != elem)
+		pDLNode = pDLNode->next;
+
+	return pDLNode == head ? NULL : pDLNode;
+}
+
+void destroyDLinkList(struct DLinkListNode* head)
+{
+	pDLinkListNodeT pDLNode = NULL;
+	while (head)
+	{
+		head = DLListDel(head, head->next);
 	}
 }
 
@@ -260,6 +384,8 @@ struct LinkListNode* rotateRight(struct LinkListNode* head, int k) {
 
 	return head;
 }
+
+
 
 void listTest()
 {
